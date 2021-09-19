@@ -1,7 +1,8 @@
 import poll
 import time
+import requests
 question = "testing the poll"
-optioins = ["poll tes1", "test2"]
+options = ["poll tes1", "test2"]
 close_time = int(time.time()) + 120
 
-poll.send_poll(question, optioins, close_time)
+poll.send_poll(question, options, close_time)
