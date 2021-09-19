@@ -1,10 +1,10 @@
 from bs4 import BeautifulSoup
-import requests
+import aiohttp
 import datetime
 
 userAgent={"UserAgent":'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0'}
 
-def schedule() -> dict:
+async def schedule(session : aiohttp.client.ClientSession) -> dict:
     """Returns the schedule of all matches today or after today
     Return: dict as shown below
     {
@@ -39,8 +39,9 @@ def schedule() -> dict:
     outputDict = {}
     #Getting Webpage
     url = "https://www.firstpost.com/firstcricket/cricket-schedule/series/ipl-2021.html"
-    res = requests.get(url , headers=userAgent)
-    soup = BeautifulSoup(res.content , features='lxml')
+    async with session.get(url , headers = userAgent) as response:
+        res = await response.text()
+    soup = BeautifulSoup(res , features='lxml')
 
 
     #Filtering all the required information from webpage [element represents HyperText node]
@@ -66,7 +67,7 @@ def schedule() -> dict:
     return outputDict
 
 
-def get_next_match() -> dict:
+async def get_next_match(session : aiohttp.client.ClientSession) -> dict:
     """Returns the schedule of all matches today or after today
     Return: dict as shown below
     {
@@ -87,7 +88,8 @@ def get_next_match() -> dict:
     outputDict = {}
     #Getting Webpage
     url = "https://www.firstpost.com/firstcricket/cricket-schedule/series/ipl-2021.html"
-    res = requests.get(url , headers=userAgent)
+    async with session.get(url , headers = userAgent) as response:
+        res = await response.text()
     soup = BeautifulSoup(res.content , features='lxml')
 
 
@@ -119,7 +121,7 @@ def get_next_match() -> dict:
 
     return outputDict
 
-def point_table():
+async def point_table(session : aiohttp.client.ClientSession):
     """Outputs The Points Table as
     [
     ['Team', 'M', 'W', 'L', 'PT', 'NRR']
@@ -136,7 +138,8 @@ def point_table():
     outputList = [["Team", "M", "W", "L", "PT", "NRR"]]
     url = "https://www.espncricinfo.com/series/_/id/8048/season/2021/indian-premier-league"
 
-    res = requests.get(url , headers = userAgent)
+    async with session.get(url , headers = userAgent) as response:
+        res = await response.text()
     soup = BeautifulSoup(res.content , features='lxml')
     points = soup.findAll(class_='pr-3')
     team = soup.findAll(class_='text-left')
@@ -148,13 +151,14 @@ def point_table():
 
     return outputList
 
-def ipl_live_score():
+async def ipl_live_score(session : aiohttp.client.ClientSession):
     
     live_score = {}
     
     link = 'https://m.cricbuzz.com/cricket-series/3472/indian-premier-league-2021'
 
-    response_sk = requests.get(link)
+    async with session.get(url , headers = userAgent) as response:
+        response_sk = await response.text()
     live_score = {}
     
     if (response_sk.status_code == 200):
@@ -173,7 +177,8 @@ def ipl_live_score():
         count = 1
 
         for link in new_links:
-            response_sk = requests.get(link)
+            async with session.get(url , headers = userAgent) as response:
+                response_sk = await response.text()
             live_score = {}
 
             comp = ""
